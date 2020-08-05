@@ -11,6 +11,7 @@ def run_app(cls):
     membership_service = MembershipService(api_client=cls())
     app = Flask(__name__)
 
+    @app.route('/authenticate', methods=['POST'])
     def authenticate():
         try:
             membership_data = membership_service.get_membership_identifier(request.data)
@@ -21,6 +22,7 @@ def run_app(cls):
         except:
             return {}, 503
 
+    @app.route('/validate', methods=['POST'])
     def validate():
         try:
             return jsonify(
@@ -29,7 +31,4 @@ def run_app(cls):
         except:
             return {}, 503
 
-    app.add_url_rule("/authenticate", "/authenticate", view_func=authenticate)
-    app.add_url_rule("/validate", "/validate", view_func=validate)
-    app.route(methods=["post"], rule=None)
     return app
