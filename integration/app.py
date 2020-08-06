@@ -14,7 +14,7 @@ def run_app(cls):
     @app.route('/authenticate', methods=['POST'])
     def authenticate():
         try:
-            membership_data = membership_service.get_membership_identifier(request.data)
+            membership_data = membership_service.get_membership_identifier(request.json)
             if membership_data is None:
                 return {}, 403
 
@@ -26,7 +26,7 @@ def run_app(cls):
     def validate():
         try:
             return jsonify(
-                {"is_active": membership_service.is_active(request.data)}
+                {"is_active": membership_service.is_active(request.json)}
             )
         except:
             return {}, 503
