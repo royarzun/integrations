@@ -7,3 +7,6 @@ class BaseAPIClient:
 
     def is_active(self, membership_identifier: str) -> bool:
         raise NotImplementedError
+
+    def external_service_is_healthy(self): -> bool:
+        raise NotImplementedError

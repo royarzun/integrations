@@ -31,8 +31,16 @@ def run_app(cls):
         except:
             return {}, 503
 
+    # Own's API's health
     @app.route('/healthz', methods=['GET'])
     def health():
         return {}, 200
+
+    # External integration's health
+    @app.route('/external_health', methods=['GET'])
+    def external_health():
+        if membership_service.external_service_is_healthy():
+            return {}, 200
+        return {}, 503
 
     return app
