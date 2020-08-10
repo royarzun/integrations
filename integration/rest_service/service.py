@@ -13,5 +13,5 @@ class MembershipService:
     def is_active(self, membership_identifier: str) -> bool:
         return self.api_client.is_active(membership_identifier)
 
-    def health(self) -> bool:
-        return self.api_client.health()
+    def health_check(self) -> bool:
+        return self.api_client.health_check()
