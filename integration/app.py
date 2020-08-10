@@ -31,4 +31,10 @@ def run_app(cls):
         except:
             return {}, 503
 
+    @app.route('/health', methods=['GET'])
+    def health():
+        if membership_service.health():
+            return {}, 200
+        return {}, 503
+
     return app
