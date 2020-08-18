@@ -15,7 +15,7 @@ def run_app(cls):
     def authenticate():
         try:
             membership_data = membership_service.get_membership_identifier(request.json)
-            if membership_data is None:
+            if not bool(membership_data):
                 return {}, 403
 
             return membership_data
