@@ -1,6 +1,9 @@
+import traceback
+
 from flask import jsonify, request, Flask
 
 from integration.rest_service.api_client import BaseAPIClient
+from integration.rest_service.exceptions import UnusableMembership, InvalidMembership
 from integration.rest_service.service import MembershipService
 
 
@@ -19,17 +22,23 @@ def run_app(cls):
                 return {}, 403
 
             return membership_data
-        except:
-            return {}, 503
+        except InvalidMembership:
+            return jsonify({"error": "INVALID_MEMBERSHIP"})
+        except UnusableMembership:
+            return jsonify({"error": "UNUSABLE_MEMBERSHIP"})
+        except Exception:
+            return jsonify({"error": traceback.format_exc()}), 500
 
     @app.route('/validate', methods=['POST'])
     def validate():
         try:
             return jsonify(
-                {"is_active": membership_service.is_active(request.json)}
+                {"is_active": membership_service.is_active(request.json.get("identifier"))}
             )
-        except:
-            return {}, 503
+        except UnusableMembership:
+            return jsonify({"error": "UNUSABLE_ACCOUNT"})
+        except Exception:
+            return jsonify({"error": traceback.format_exc()}), 500
 
     # Own's API's health
     @app.route('/healthz', methods=['GET'])

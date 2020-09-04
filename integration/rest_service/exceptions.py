@@ -4,3 +4,13 @@ class ServiceUnavailableException(Exception):
 
 class ImproperlyConfigured(Exception):
     pass
+
+
+class UnusableMembership(Exception):
+    # Valid membership but deleted, expired, canceled, etc
+    pass
+
+
+class InvalidMembership(Exception):
+    # Not existent membership
+    pass
