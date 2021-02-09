@@ -1,4 +1,9 @@
-from typing import Dict
+from typing import Dict, TypedDict, Optional
+
+
+class CodeRequestResponse(TypedDict):
+    obfuscated_device_identifier: Optional[str]
+    error: Optional[str]
 
 
 class BaseAPIClient:
@@ -9,4 +14,7 @@ class BaseAPIClient:
         raise NotImplementedError
 
     def external_service_is_healthy(self) -> bool:
+        raise NotImplementedError
+
+    def request_verification_code(self, user_data: Dict) -> CodeRequestResponse:
         raise NotImplementedError

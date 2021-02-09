@@ -52,4 +52,16 @@ def run_app(cls):
             return {}, 200
         return {}, 503
 
+    @app.route('/code_request', methods=['POST'])
+    def code_request():
+        try:
+            membership_data = membership_service.request_verification_code(request.json)
+            return membership_data
+        except InvalidMembership:
+            return jsonify({"error": "INVALID_MEMBERSHIP"})
+        except UnusableMembership:
+            return jsonify({"error": "UNUSABLE_MEMBERSHIP"})
+        except Exception:
+            return jsonify({"error": traceback.format_exc()}), 500
+
     return app
