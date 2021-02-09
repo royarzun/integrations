@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 
-from integration.rest_service.api_client import BaseAPIClient
+from integration.rest_service.api_client import BaseAPIClient, CodeRequestResponse
 
 
 class MembershipService:
@@ -15,3 +15,6 @@ class MembershipService:
 
     def external_service_is_healthy(self) -> bool:
         return self.api_client.external_service_is_healthy()
+
+    def request_verification_code(self, user_data: Dict) -> CodeRequestResponse:
+        return self.api_client.request_verification_code(user_data)
