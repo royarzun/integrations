@@ -7,7 +7,6 @@ from integration.rest_service.api_client import BaseAPIClient
 from integration.rest_service.exceptions import ImproperlyConfigured
 from integration.rest_service.service import MembershipService
 
-
 INTEGRATION_API_CLIENT_CLASS_SETTING = "INTEGRATION_API_CLIENT_CLASS"
 
 
