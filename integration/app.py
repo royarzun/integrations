@@ -68,4 +68,25 @@ def run_app(cls):
         except Exception:
             return jsonify({"error": traceback.format_exc()}), 500
 
+    @app.route("/data/", methods=["POST"])
+    def create_private_identifier():
+        value = request.json.get("value")
+        if not value:
+            return jsonify({"error": "INVALID_MEMBERSHIP"}), 400
+        membership_data = membership_service.create_private_identifier(value)
+        return membership_data
+
+    @app.route("/data/<uuid>", methods=["GET"])
+    def retrieve_private_identifier(uuid):
+        membership_data = membership_service.get_private_identifier_value(uuid)
+        if membership_data:
+            return membership_data
+        return jsonify({"error": "NOT_FOUND"}), 404
+
+    @app.route("/data/<uuid>", methods=["DELETE"])
+    def delete_private_identifier(uuid):
+        if membership_service.delete_private_identifier(uuid):
+            return {}, 200
+        return jsonify({"error": "NOT_FOUND"}), 404
+
     return app
