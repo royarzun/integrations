@@ -1,9 +1,9 @@
 import traceback
 
-from flask import jsonify, request, Flask
+from flask import Flask, abort, jsonify, request
 
 from integration.rest_service.api_client import BaseAPIClient
-from integration.rest_service.exceptions import UnusableMembership, InvalidMembership
+from integration.rest_service.exceptions import InvalidMembership, UnusableMembership
 from integration.rest_service.service import MembershipService
 
 
@@ -14,7 +14,7 @@ def run_app(cls):
     membership_service = MembershipService(api_client=cls())
     app = Flask(__name__)
 
-    @app.route('/authenticate', methods=['POST'])
+    @app.route("/authenticate", methods=["POST"])
     def authenticate():
         try:
             membership_data = membership_service.get_membership_identifier(request.json)
@@ -29,11 +29,15 @@ def run_app(cls):
         except Exception:
             return jsonify({"error": traceback.format_exc()}), 500
 
-    @app.route('/validate', methods=['POST'])
+    @app.route("/validate", methods=["POST"])
     def validate():
         try:
             return jsonify(
-                {"is_active": membership_service.is_active(request.json.get("identifier"))}
+                {
+                    "is_active": membership_service.is_active(
+                        request.json.get("identifier")
+                    )
+                }
             )
         except UnusableMembership:
             return jsonify({"error": "UNUSABLE_ACCOUNT"})
@@ -41,18 +45,18 @@ def run_app(cls):
             return jsonify({"error": traceback.format_exc()}), 500
 
     # Own's API's health
-    @app.route('/healthz', methods=['GET'])
+    @app.route("/healthz", methods=["GET"])
     def health():
         return {}, 200
 
     # External integration's health
-    @app.route('/external_health', methods=['GET'])
+    @app.route("/external_health", methods=["GET"])
     def external_health():
         if membership_service.external_service_is_healthy():
             return {}, 200
         return {}, 503
 
-    @app.route('/code_request', methods=['POST'])
+    @app.route("/code_request", methods=["POST"])
     def code_request():
         try:
             membership_data = membership_service.request_verification_code(request.json)
