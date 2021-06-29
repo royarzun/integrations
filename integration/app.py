@@ -60,7 +60,7 @@ def run_app(cls):
             return {}, 200
         return {}, 503
 
-    @app.route("/code_request", methods=["POST"])
+    @app.route("/request_code", methods=["POST"])
     def code_request() -> Tuple[Union[Dict, CodeRequestResponse], int]:
         try:
             membership_data = membership_service.request_verification_code(request.json)
