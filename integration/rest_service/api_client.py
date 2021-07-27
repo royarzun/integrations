@@ -28,7 +28,7 @@ class BaseAPIClient:
     def request_verification_code(self, user_data: Dict) -> CodeRequestResponse:
         raise NotImplementedError
 
-    def get_private_identifier_value_list(
+    def search_private_identifiers_values(
         self, uuids: List[str]
     ) -> PrivateIdentifierList:
         return NotImplementedError

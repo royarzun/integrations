@@ -79,9 +79,9 @@ def run_app(cls):
             return jsonify({"error": traceback.format_exc()}), 500
 
     @app.route("/data/search", methods=["POST"])
-    def retrieve_private_identifiers() -> Tuple[Union[List[Dict], Dict], int]:
+    def search_private_identifiers_values() -> Tuple[Union[List[Dict], Dict], int]:
         if request.json and "identifiers" in request.json:
-            membership_data = membership_service.get_private_identifier_value_list(
+            membership_data = membership_service.search_private_identifiers_values(
                 uuids=request.json["identifiers"]
             )
             if len(membership_data["data"]) > 0:

@@ -24,10 +24,10 @@ class MembershipService:
     def request_verification_code(self, user_data: Dict) -> CodeRequestResponse:
         return self.api_client.request_verification_code(user_data)
 
-    def get_private_identifier_value_list(
+    def search_private_identifiers_values(
         self, uuids: List[str]
     ) -> PrivateIdentifierList:
-        return self.api_client.get_private_identifier_value_list(uuids)
+        return self.api_client.search_private_identifiers_values(uuids)
 
     def create_private_identifier(self, value: str) -> PrivateIdentifier:
         return self.api_client.create_private_identifier(value)
