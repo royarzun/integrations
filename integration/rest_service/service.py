@@ -1,10 +1,10 @@
-from typing import Dict, Optional
+from typing import List, Dict, Optional
 
 from integration.rest_service.api_client import (
     BaseAPIClient,
     CodeRequestResponse,
-    PrivateIdentifierData,
-    PrivateIdentifierValue,
+    PrivateIdentifier,
+    PrivateIdentifierList,
 )
 
 
@@ -24,12 +24,15 @@ class MembershipService:
     def request_verification_code(self, user_data: Dict) -> CodeRequestResponse:
         return self.api_client.request_verification_code(user_data)
 
-    def create_private_identifier(self, value: str) -> PrivateIdentifierData:
+    def get_private_identifier_value_list(
+        self, uuids: List[str]
+    ) -> PrivateIdentifierList:
+        return self.api_client.get_private_identifier_value_list(uuids)
+
+    def create_private_identifier(self, value: str) -> PrivateIdentifier:
         return self.api_client.create_private_identifier(value)
 
-    def get_private_identifier_value(
-        self, uuid: str
-    ) -> Optional[PrivateIdentifierValue]:
+    def get_private_identifier_value(self, uuid: str) -> Optional[PrivateIdentifier]:
         return self.api_client.get_private_identifier_value(uuid)
 
     def delete_private_identifier(self, uuid: str) -> bool:

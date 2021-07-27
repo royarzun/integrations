@@ -1,4 +1,4 @@
-from typing import Dict, Optional, TypedDict
+from typing import Dict, List, Optional, TypedDict
 
 
 class CodeRequestResponse(TypedDict):
@@ -6,12 +6,13 @@ class CodeRequestResponse(TypedDict):
     error: Optional[str]
 
 
-class PrivateIdentifierData(TypedDict):
+class PrivateIdentifier(TypedDict):
     identifier: str
-
-
-class PrivateIdentifierValue(TypedDict):
     value: str
+
+
+class PrivateIdentifierList(TypedDict):
+    data: List[PrivateIdentifier]
 
 
 class BaseAPIClient:
@@ -27,12 +28,15 @@ class BaseAPIClient:
     def request_verification_code(self, user_data: Dict) -> CodeRequestResponse:
         raise NotImplementedError
 
-    def create_private_identifier(self, value: str) -> PrivateIdentifierData:
+    def get_private_identifier_value_list(
+        self, uuids: List[str]
+    ) -> PrivateIdentifierList:
+        return NotImplementedError
+
+    def create_private_identifier(self, value: str) -> PrivateIdentifier:
         raise NotImplementedError
 
-    def get_private_identifier_value(
-        self, uuid: str
-    ) -> Optional[PrivateIdentifierValue]:
+    def get_private_identifier_value(self, uuid: str) -> Optional[PrivateIdentifier]:
         raise NotImplementedError
 
     def delete_private_identifier(self, uuid: str) -> bool:
