@@ -1,15 +1,15 @@
 import traceback
 from typing import Dict, List, Tuple, Union
 
-from flask import Flask, abort, jsonify, request, Response
+from flask import Flask, jsonify, request
 
 from integration.rest_service.api_client import BaseAPIClient, CodeRequestResponse
 from integration.rest_service.exceptions import (
-    InvalidMembership,
-    UnusableMembership,
-    GenericSatelliteException,
     BadRequest,
+    GenericSatelliteException,
+    InvalidMembership,
     NotFound,
+    UnusableMembership,
 )
 from integration.rest_service.service import MembershipService
 
