@@ -84,7 +84,7 @@ def run_app(cls):
             membership_data = membership_service.get_private_identifier_value_list(
                 uuids=request.json["identifiers"]
             )
-            if len(membership_data) > 0:
+            if len(membership_data["data"]) > 0:
                 return membership_data, 200
             raise NotFound
         raise BadRequest
