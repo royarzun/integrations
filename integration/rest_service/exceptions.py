@@ -1,3 +1,11 @@
+class GenericSatelliteException(Exception):
+    status_code = 500
+
+    def __init__(self, *args: object):
+        super().__init__(args)
+        self.error_code = None
+
+
 class ServiceUnavailableException(Exception):
     status_code = 503
 
@@ -14,3 +22,17 @@ class UnusableMembership(Exception):
 class InvalidMembership(Exception):
     # Not existent membership
     pass
+
+
+class BadRequest(GenericSatelliteException):
+    status_code = 400
+    error_code = "BAD_REQUEST"
+
+
+class SearchFilterLimitReached(BadRequest):
+    error_code = "SEARCH_FILTER_LIMIT_REACHED"
+
+
+class NotFound(GenericSatelliteException):
+    status_code = 404
+    error_code = "NOT_FOUND"
