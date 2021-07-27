@@ -1,10 +1,16 @@
 import traceback
-from typing import Dict, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
-from flask import Flask, abort, jsonify, request
+from flask import Flask, jsonify, request
 
 from integration.rest_service.api_client import BaseAPIClient, CodeRequestResponse
-from integration.rest_service.exceptions import InvalidMembership, UnusableMembership
+from integration.rest_service.exceptions import (
+    BadRequest,
+    GenericSatelliteException,
+    InvalidMembership,
+    NotFound,
+    UnusableMembership,
+)
 from integration.rest_service.service import MembershipService
 
 
@@ -72,6 +78,17 @@ def run_app(cls):
         except Exception:
             return jsonify({"error": traceback.format_exc()}), 500
 
+    @app.route("/data/search", methods=["POST"])
+    def search_private_identifiers_values() -> Tuple[Union[List[Dict], Dict], int]:
+        if request.json and "identifiers" in request.json:
+            membership_data = membership_service.search_private_identifiers_values(
+                uuids=request.json["identifiers"]
+            )
+            if len(membership_data["data"]) > 0:
+                return membership_data, 200
+            raise NotFound
+        raise BadRequest
+
     @app.route("/data/", methods=["POST"])
     def create_private_identifier() -> Tuple[Dict, int]:
         value = request.json.get("value")
@@ -92,5 +109,10 @@ def run_app(cls):
         if membership_service.delete_private_identifier(uuid):
             return {}, 200
         return jsonify({"error": "NOT_FOUND"}), 404
+
+    @app.errorhandler(GenericSatelliteException)
+    def handle_exception(e: GenericSatelliteException) -> Tuple[Dict, int]:
+        """Return serialized JSON for GenericSatelliteException errors"""
+        return jsonify({"error": e.error_code}), e.status_code
 
     return app
