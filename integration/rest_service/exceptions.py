@@ -1,9 +1,6 @@
 class GenericSatelliteException(Exception):
     status_code = 500
-
-    def __init__(self, *args: object):
-        super().__init__(args)
-        self.error_code = None
+    error_code = ""
 
 
 class ServiceUnavailableException(Exception):
