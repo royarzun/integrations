@@ -1,4 +1,3 @@
-import traceback
 from typing import Dict, List, Tuple, Union
 
 from flask import Flask, jsonify, request
@@ -33,8 +32,6 @@ def run_app(cls):
             return jsonify({"error": "INVALID_MEMBERSHIP"}), 200
         except UnusableMembership:
             return jsonify({"error": "UNUSABLE_MEMBERSHIP"}), 200
-        except Exception:
-            return jsonify({"error": traceback.format_exc()}), 500
 
     @app.route("/validate", methods=["POST"])
     def validate() -> Tuple[Dict, int]:
@@ -51,8 +48,6 @@ def run_app(cls):
             )
         except UnusableMembership:
             return jsonify({"error": "UNUSABLE_ACCOUNT"}), 200
-        except Exception:
-            return jsonify({"error": traceback.format_exc()}), 500
 
     # Own's API's health
     @app.route("/healthz", methods=["GET"])
@@ -75,8 +70,6 @@ def run_app(cls):
             return jsonify({"error": "INVALID_MEMBERSHIP"}), 200
         except UnusableMembership:
             return jsonify({"error": "UNUSABLE_MEMBERSHIP"}), 200
-        except Exception:
-            return jsonify({"error": traceback.format_exc()}), 500
 
     @app.route("/data/search", methods=["POST"])
     def search_private_identifiers_values() -> Tuple[Union[List[Dict], Dict], int]:
