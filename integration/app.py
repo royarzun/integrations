@@ -1,4 +1,3 @@
-import traceback
 from typing import Dict, List, Tuple, Union
 
 from flask import Flask, jsonify, request
@@ -6,10 +5,9 @@ from flask import Flask, jsonify, request
 from integration.rest_service.api_client import BaseAPIClient, CodeRequestResponse
 from integration.rest_service.exceptions import (
     BadRequest,
-    GenericSatelliteException,
-    InvalidMembership,
+    HandledSatelliteException,
+    ServiceUnavailableException,
     NotFound,
-    UnusableMembership,
 )
 from integration.rest_service.service import MembershipService
 
@@ -23,36 +21,24 @@ def run_app(cls):
 
     @app.route("/authenticate", methods=["POST"])
     def authenticate() -> Tuple[Dict, int]:
-        try:
-            membership_data = membership_service.get_membership_identifier(request.json)
-            if not bool(membership_data):
-                return {}, 403
+        membership_data = membership_service.get_membership_identifier(request.json)
+        if not bool(membership_data):
+            return {}, 403
 
-            return membership_data, 200
-        except InvalidMembership:
-            return jsonify({"error": "INVALID_MEMBERSHIP"}), 200
-        except UnusableMembership:
-            return jsonify({"error": "UNUSABLE_MEMBERSHIP"}), 200
-        except Exception:
-            return jsonify({"error": traceback.format_exc()}), 500
+        return membership_data, 200
 
     @app.route("/validate", methods=["POST"])
     def validate() -> Tuple[Dict, int]:
-        try:
-            return (
-                jsonify(
-                    {
-                        "is_active": membership_service.is_active(
-                            request.json.get("identifier")
-                        )
-                    }
-                ),
-                200,
-            )
-        except UnusableMembership:
-            return jsonify({"error": "UNUSABLE_ACCOUNT"}), 200
-        except Exception:
-            return jsonify({"error": traceback.format_exc()}), 500
+        return (
+            jsonify(
+                {
+                    "is_active": membership_service.is_active(
+                        request.json.get("identifier")
+                    )
+                }
+            ),
+            200,
+        )
 
     # Own's API's health
     @app.route("/healthz", methods=["GET"])
@@ -64,19 +50,12 @@ def run_app(cls):
     def external_health() -> Tuple[Dict, int]:
         if membership_service.external_service_is_healthy():
             return {}, 200
-        return {}, 503
+        raise ServiceUnavailableException
 
     @app.route("/request_code", methods=["POST"])
     def code_request() -> Tuple[Union[Dict, CodeRequestResponse], int]:
-        try:
-            membership_data = membership_service.request_verification_code(request.json)
-            return membership_data, 200
-        except InvalidMembership:
-            return jsonify({"error": "INVALID_MEMBERSHIP"}), 200
-        except UnusableMembership:
-            return jsonify({"error": "UNUSABLE_MEMBERSHIP"}), 200
-        except Exception:
-            return jsonify({"error": traceback.format_exc()}), 500
+        membership_data = membership_service.request_verification_code(request.json)
+        return membership_data, 200
 
     @app.route("/data/search", methods=["POST"])
     def search_private_identifiers_values() -> Tuple[Union[List[Dict], Dict], int]:
@@ -102,17 +81,17 @@ def run_app(cls):
         membership_data = membership_service.get_private_identifier_value(uuid)
         if membership_data:
             return membership_data, 200
-        return jsonify({"error": "NOT_FOUND"}), 404
+        raise NotFound
 
     @app.route("/data/<uuid>", methods=["DELETE"])
     def delete_private_identifier(uuid: str) -> Tuple[Dict, int]:
         if membership_service.delete_private_identifier(uuid):
             return {}, 200
-        return jsonify({"error": "NOT_FOUND"}), 404
+        raise NotFound
 
-    @app.errorhandler(GenericSatelliteException)
-    def handle_exception(e: GenericSatelliteException) -> Tuple[Dict, int]:
-        """Return serialized JSON for GenericSatelliteException errors"""
+    @app.errorhandler(HandledSatelliteException)
+    def handle_exception(e: HandledSatelliteException) -> Tuple[Dict, int]:
+        """Return serialized JSON for HandledSatelliteException errors"""
         return jsonify({"error": e.error_code}), e.status_code
 
     return app
