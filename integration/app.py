@@ -6,9 +6,8 @@ from integration.rest_service.api_client import BaseAPIClient, CodeRequestRespon
 from integration.rest_service.exceptions import (
     BadRequest,
     HandledSatelliteException,
-    InvalidMembership,
+    ServiceUnavailableException,
     NotFound,
-    UnusableMembership,
 )
 from integration.rest_service.service import MembershipService
 
@@ -51,7 +50,7 @@ def run_app(cls):
     def external_health() -> Tuple[Dict, int]:
         if membership_service.external_service_is_healthy():
             return {}, 200
-        return {}, 503
+        raise ServiceUnavailableException
 
     @app.route("/request_code", methods=["POST"])
     def code_request() -> Tuple[Union[Dict, CodeRequestResponse], int]:
