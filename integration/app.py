@@ -82,13 +82,13 @@ def run_app(cls):
         membership_data = membership_service.get_private_identifier_value(uuid)
         if membership_data:
             return membership_data, 200
-        return jsonify({"error": "NOT_FOUND"}), 404
+        raise NotFound
 
     @app.route("/data/<uuid>", methods=["DELETE"])
     def delete_private_identifier(uuid: str) -> Tuple[Dict, int]:
         if membership_service.delete_private_identifier(uuid):
             return {}, 200
-        return jsonify({"error": "NOT_FOUND"}), 404
+        raise NotFound
 
     @app.errorhandler(HandledSatelliteException)
     def handle_exception(e: HandledSatelliteException) -> Tuple[Dict, int]:
