@@ -22,32 +22,24 @@ def run_app(cls):
 
     @app.route("/authenticate", methods=["POST"])
     def authenticate() -> Tuple[Dict, int]:
-        try:
-            membership_data = membership_service.get_membership_identifier(request.json)
-            if not bool(membership_data):
-                return {}, 403
+        membership_data = membership_service.get_membership_identifier(request.json)
+        if not bool(membership_data):
+            return {}, 403
 
-            return membership_data, 200
-        except InvalidMembership:
-            return jsonify({"error": "INVALID_MEMBERSHIP"}), 200
-        except UnusableMembership:
-            return jsonify({"error": "UNUSABLE_MEMBERSHIP"}), 200
+        return membership_data, 200
 
     @app.route("/validate", methods=["POST"])
     def validate() -> Tuple[Dict, int]:
-        try:
-            return (
-                jsonify(
-                    {
-                        "is_active": membership_service.is_active(
-                            request.json.get("identifier")
-                        )
-                    }
-                ),
-                200,
-            )
-        except UnusableMembership:
-            return jsonify({"error": "UNUSABLE_ACCOUNT"}), 200
+        return (
+            jsonify(
+                {
+                    "is_active": membership_service.is_active(
+                        request.json.get("identifier")
+                    )
+                }
+            ),
+            200,
+        )
 
     # Own's API's health
     @app.route("/healthz", methods=["GET"])
@@ -63,13 +55,8 @@ def run_app(cls):
 
     @app.route("/request_code", methods=["POST"])
     def code_request() -> Tuple[Union[Dict, CodeRequestResponse], int]:
-        try:
-            membership_data = membership_service.request_verification_code(request.json)
-            return membership_data, 200
-        except InvalidMembership:
-            return jsonify({"error": "INVALID_MEMBERSHIP"}), 200
-        except UnusableMembership:
-            return jsonify({"error": "UNUSABLE_MEMBERSHIP"}), 200
+        membership_data = membership_service.request_verification_code(request.json)
+        return membership_data, 200
 
     @app.route("/data/search", methods=["POST"])
     def search_private_identifiers_values() -> Tuple[Union[List[Dict], Dict], int]:
