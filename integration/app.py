@@ -52,7 +52,7 @@ def run_app(cls):
             return {}, 200
         raise ServiceUnavailableException
 
-    @app.route("/request_code", methods=["POST"])
+    @app.route("/code_request", methods=["POST"])
     def code_request() -> Tuple[Union[Dict, CodeRequestResponse], int]:
         membership_data = membership_service.request_verification_code(request.json)
         return membership_data, 200
