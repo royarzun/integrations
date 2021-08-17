@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request
 from integration.rest_service.api_client import BaseAPIClient, CodeRequestResponse
 from integration.rest_service.exceptions import (
     BadRequest,
-    GenericSatelliteException,
+    HandledSatelliteException,
     InvalidMembership,
     NotFound,
     UnusableMembership,
@@ -103,9 +103,9 @@ def run_app(cls):
             return {}, 200
         return jsonify({"error": "NOT_FOUND"}), 404
 
-    @app.errorhandler(GenericSatelliteException)
-    def handle_exception(e: GenericSatelliteException) -> Tuple[Dict, int]:
-        """Return serialized JSON for GenericSatelliteException errors"""
+    @app.errorhandler(HandledSatelliteException)
+    def handle_exception(e: HandledSatelliteException) -> Tuple[Dict, int]:
+        """Return serialized JSON for HandledSatelliteException errors"""
         return jsonify({"error": e.error_code}), e.status_code
 
     return app
